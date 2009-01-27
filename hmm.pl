@@ -66,16 +66,35 @@ sub slider($window) { #so this method will just check the @state_values
 }
 
 # this is the "beginning state" probability table
-sub p_initial_state(s) {
+sub p_initial_state() {
     return 0.5;
 }
 
 # this is the "state given a current state" probability table
-sub p_state_given_state(s1, s2) {
-    
+sub p_state_given_state($s1, $s2) {
+    # non-CpG -> non-CpG state transition
+    if ($s1 == $no_cpg_state &&
+        $s2 == $no_cpg_state) {
+        return 0.7;
+    }
+    # non-CpG -> CpG state transition
+    if ($s1 == $no_cpg_state &&
+        $s2 == $cpg_state) {
+        return 0.3;
+    }
+    # CpG -> non-CpG state transition
+    if ($s1 == $cpg_state &&
+        $s2 == $no_cpg_state) {
+        return 0.5;
+    }
+    # CpG -> CpG state transition
+    if ($s1 == $cpg_state &&
+        $s2 == $cpg_state) {
+        return 0.5;
+    }
 }
 
 # this is the "state given a nucleotide" probability table
-sub p_state_given_nucleotide(s1, n) {
+sub p_state_given_nucleotide($s1, $n) {
 }
 
