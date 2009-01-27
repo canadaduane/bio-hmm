@@ -78,23 +78,64 @@ sub p_state_given_state($s1, $s2) {
         return 0.7;
     }
     # non-CpG -> CpG state transition
-    if ($s1 == $no_cpg_state &&
+    elsif ($s1 == $no_cpg_state &&
         $s2 == $cpg_state) {
         return 0.3;
     }
     # CpG -> non-CpG state transition
-    if ($s1 == $cpg_state &&
+    elsif ($s1 == $cpg_state &&
         $s2 == $no_cpg_state) {
         return 0.5;
     }
     # CpG -> CpG state transition
-    if ($s1 == $cpg_state &&
+    elsif ($s1 == $cpg_state &&
         $s2 == $cpg_state) {
         return 0.5;
+    }
+    else {
+        die "(p_state_given_state): unknown states $s1, $s2";
     }
 }
 
 # this is the "state given a nucleotide" probability table
 sub p_state_given_nucleotide($s1, $n) {
+    # non-CpG state
+    if ($s1 == $no_cpg_state) {
+        if ($n == 'a') {
+            return 0.251;
+        }
+        elsif ($n == 't') {
+            return 0.40;
+        }
+        elsif ($n == 'c') {
+            return 0.098;
+        }
+        elsif ($n == 'g') {
+            return 0.251;
+        }
+        else {
+            die "(p_state_given_nucleotide): unknown nucleotide $n";
+        }
+    }
+    elsif ($s1 == $cpg_state) {
+        if ($n == 'a') {
+            return 0.25;
+        }
+        elsif ($n == 't') {
+            return 0.25;
+        }
+        elsif ($n == 'c') {
+            return 0.25;
+        }
+        elsif ($n == 'g') {
+            return 0.25;
+        }
+        else {
+            die "(p_state_given_nucleotide): unknown nucleotide $n";
+        }
+    }
+    else {
+        die "(p_state_given_nucleotide): unknown state $s1";
+    }
 }
 
