@@ -24,8 +24,8 @@ sub get_states(){    #and this method will loop through the sequence
                       #next base?
     
     $probability = 1.0;
-    $currentState = pInitialState();
-    push @state_values,$currentState; #is this right? 
+    $current_state = p_initial_state();
+    push @state_values, $current_state; #is this right? 
     foreach( 0..@sequence-1 ){
         $p1 = p_state_given_nucleotide($cpg_state, $sequence[$_]);
         $p2 = p_state_given_nucleotide($no_cpg_state, $sequence[$_]);
@@ -62,6 +62,7 @@ sub p_initial_state(s) {
 
 # this is the "state given a current state" probability table
 sub p_state_given_state(s1, s2) {
+    
 }
 
 # this is the "state given a nucleotide" probability table
