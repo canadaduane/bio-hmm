@@ -1,4 +1,4 @@
-#!bin/usr/perl
+#!/usr/bin/perl
 
 use List::Util qw[min max];  #this allows us to use max function
 
@@ -24,10 +24,21 @@ use List::Util qw[min max];  #this allows us to use max function
     $no_cpg_state = 0;
     # CpG Island state:
     $cpg_state = 1;
+    # Look-up table for p_state_given_state
+    %sstate = (
+        0 => {0 => 0.7, 1 => 0.3},
+        1 => {0 => 0.5, 1 => 0.5}
+    );
+    # Look-up table for p_state_given_nucleotide
+    %nstate = (
+        0 => {'a' => 0.251, 't' => 0.400, 'c' => 0.098, 'g' => 0.251},
+        1 => {'a' => 0.250, 't' => 0.250, 'c' => 0.250, 'g' => 0.250}
+    );
 
 
 # Here we'll each write our own code to actually use all of the methods
-
+print "Hi: " . p_state_given_state(0, 1);
+print "\nBye: " . p_state_given_nucleotide(0, 'a');
 
 # and this method will loop through the sequence
 # giving the probabilityOf method the current base and
@@ -71,71 +82,25 @@ sub p_initial_state() {
 }
 
 # this is the "state given a current state" probability table
-sub p_state_given_state($s1, $s2) {
-    # non-CpG -> non-CpG state transition
-    if ($s1 == $no_cpg_state &&
-        $s2 == $no_cpg_state) {
-        return 0.7;
-    }
-    # non-CpG -> CpG state transition
-    elsif ($s1 == $no_cpg_state &&
-        $s2 == $cpg_state) {
-        return 0.3;
-    }
-    # CpG -> non-CpG state transition
-    elsif ($s1 == $cpg_state &&
-        $s2 == $no_cpg_state) {
-        return 0.5;
-    }
-    # CpG -> CpG state transition
-    elsif ($s1 == $cpg_state &&
-        $s2 == $cpg_state) {
-        return 0.5;
-    }
-    else {
-        die "(p_state_given_state): unknown states $s1, $s2";
-    }
+sub p_state_given_state() {
+    my $s1 = shift;
+    my $s2 = shift;
+    # if ( !exists($sstate{ $s1 }) ) {
+    #     die "(p_state_given_state): unknown states $s1, $s2";
+    # }
+    return $sstate{ $s1 }{ $s2 };
 }
 
 # this is the "state given a nucleotide" probability table
-sub p_state_given_nucleotide($s1, $n) {
-    # non-CpG state
-    if ($s1 == $no_cpg_state) {
-        if ($n == 'a') {
-            return 0.251;
-        }
-        elsif ($n == 't') {
-            return 0.40;
-        }
-        elsif ($n == 'c') {
-            return 0.098;
-        }
-        elsif ($n == 'g') {
-            return 0.251;
-        }
-        else {
-            die "(p_state_given_nucleotide): unknown nucleotide $n";
-        }
-    }
-    elsif ($s1 == $cpg_state) {
-        if ($n == 'a') {
-            return 0.25;
-        }
-        elsif ($n == 't') {
-            return 0.25;
-        }
-        elsif ($n == 'c') {
-            return 0.25;
-        }
-        elsif ($n == 'g') {
-            return 0.25;
-        }
-        else {
-            die "(p_state_given_nucleotide): unknown nucleotide $n";
-        }
-    }
-    else {
-        die "(p_state_given_nucleotide): unknown state $s1";
-    }
+sub p_state_given_nucleotide() {
+    my $s1 = shift;
+    my $n = shift;
+    # if ( !exists($nstate{ $s1 }) ) {
+    #     die "(p_state_given_nucleotide): unknown state $s1";
+    # }
+    # elsif( !exists($nstate{ $s1 }{ $n }) ) {
+    #     die "(p_state_given_nucleotide): unknown nucleotide $n";
+    # }
+    return $nstate{ $s1 }{ $n };
 }
 
