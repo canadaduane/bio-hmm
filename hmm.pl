@@ -2,52 +2,62 @@
 
 use List::Util qw[min max];  #this allows us to use max function
 
-#variables that we'll need
-#read in the parameters from a file
-        #state probabilities
-        
-$window = shift;    #variable to read in window size from command line 
-$cpg_island_threshold = shift;
-$filename = shift;
+# Command-line Arguments:
 
-@sequence = ();
-@state_values = ();
-$cpg_state = 1;
-$no_cpg_state = 0;
+    # 1. The number of nucleotides in the "window"
+    $window = shift;    #variable to read in window size from command line 
+    # 2. The threshold (in %) of the CpG Island
+    $cpg_island_threshold = shift;
+    # 3. The filename containing the nucleotide sequence
+    $filename = shift;
 
-
-#Here we'll each write our own code to actually use all of the methods
-
-
-sub get_states(){    #and this method will loop through the sequence
-                     #giving the probabilityOf method the current base and
-                      #next base?
+# Global Variables:
     
+    # An array of the nucleotide sequence
+    @sequence = ();
+    # An array of states, e.g. 0 for non-CpG and 1 for CpG state
+    @state_values = ();
+
+# Global Constants:
+
+    # Non CpG Island state:
+    $no_cpg_state = 0;
+    # CpG Island state:
+    $cpg_state = 1;
+
+
+# Here we'll each write our own code to actually use all of the methods
+
+
+# and this method will loop through the sequence
+# giving the probabilityOf method the current base and
+# next base?
+sub get_states() {
     $probability = 1.0;
-    $current_state = p_initial_state();
-    push @state_values, $current_state; #is this right? 
-    foreach( 0..@sequence-1 ){
+    
+    # Assume we're not in the middle of an island for starters
+    $current_state = $no_cpg_state;
+    
+    foreach( 0..@sequence-1 ) {
         $p1 = p_state_given_nucleotide($cpg_state, $sequence[$_]);
         $p2 = p_state_given_nucleotide($no_cpg_state, $sequence[$_]);
-        if( $p1 > $p2 ){
-            push (@state_values, $cpg_state);
+        if( $p1 > $p2 ) {
+            $current_state = $cpg_state;
         }
-        else{
-            push ($state_values, $no_cpg_state);
+        else {
+            $current_state = $no_cpg_state;
         }
+        push (@state_values, $current_state);
         $probability = $probability + log(max($p1, $p2));
     }
 }
 
-#method to return the state given the current base and next base
-
-
 # Reads in a text file containing pure nucleotide sequences
-# (should we have a readFasta as well?)
+# (should we have a read_fasta as well?)
 sub read_nucleotides($filename) {
     open FILE, $filename or die $!;
     $tmp = FILE;
-    @sequence = split(//,$tmp); #this should split every character
+    @sequence = split(//,$tmp); # this should split every character
 }
 
 sub slider($window) { #so this method will just check the @state_values
