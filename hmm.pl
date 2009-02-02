@@ -42,8 +42,10 @@ use List::Util qw[min max];  #this allows us to use max function
 
 
 # Here we'll each write our own code to actually use all of the methods
-print "Hi: " . p_state_given_state(0, 1);
-print "\nBye: " . p_state_given_nucleotide(0, 'a');
+read_nucleotides();
+get_states();
+slider();
+print_islands();
 
 # and this method will loop through the sequence
 # giving the probabilityOf method the current base and
@@ -54,9 +56,11 @@ sub get_states() {
     # Assume we're not in the middle of an island for starters
     $current_state = $no_cpg_state;
     
+    # print "sequence: @sequence\n";
     foreach( 0..@sequence-1 ) {
-        $p1 = p_state_given_nucleotide($cpg_state, $sequence[$_]);
-        $p2 = p_state_given_nucleotide($no_cpg_state, $sequence[$_]);
+        # print "Nucleotide: $sequence[$_]\n";
+        $p1 = p_state_given_nucleotide($cpg_state, lc($sequence[$_]));
+        $p2 = p_state_given_nucleotide($no_cpg_state, lc($sequence[$_]));
         $trans_p1 = p_state_given_state($current_state, $cpg_state);
         $trans_p2 = p_state_given_state($current_state, $no_cpg_state);
         if( $p1*$trans_p1 > $p2*$trans_p2 ) {
@@ -72,15 +76,15 @@ sub get_states() {
 
 # Reads in a text file containing pure nucleotide sequences
 # (should we have a read_fasta as well?)
-sub read_nucleotides($filename) {
+sub read_nucleotides() {
     open FILE, $filename or die $!;
-    $tmp = FILE;
+    read(FILE, $tmp, 10000);
     @sequence = split(//,$tmp); # this should split every character
 }
 
 sub slider {
     $size = @state_values;
-    $win = shift;
+    $win = $window;
     $win --;        #this alters the window size for an array (starts at 0)
     $size = $size-$win; # so if the $size is 100, and $win was 20, we get $size = 79 here
     for( 0 .. $size ){
@@ -88,7 +92,7 @@ sub slider {
         $total = 0;
         ($total+=$_) for @tmp;
         $percent = $total/($win+1);
-        print "position: $_  Total: $total  Percentage: $percent\n";
+        # print "position: $_  Total: $total  Percentage: $percent\n";
         if($percent >= $threshold){
                 push(@cpg, 1);
         }
