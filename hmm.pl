@@ -21,7 +21,6 @@ use List::Util qw[min max];  #this allows us to use max function
     @cpg = ();
     @cpg_percentages = ();
     $threshold = .7;
-    $window = 4;
     
 # Global Constants:
 
