@@ -78,7 +78,7 @@ sub get_states() {
 # (should we have a read_fasta as well?)
 sub read_nucleotides() {
     open FILE, $filename or die $!;
-    read(FILE, $tmp, 10000);
+    read(FILE, $tmp, -1);
     @sequence = split(//,$tmp); # this should split every character
 }
 
